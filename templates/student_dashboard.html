@@ -1,0 +1,87 @@
+<html>
+
+<title>Student Dashboard - Time Slot Booking App</title>
+
+<h1>Time Slot Booking App</h1>
+
+<h2>Student Dashboard - <a href="{{ url_for('logout') }}">Logout</a></h2>
+
+<hr>
+
+<h3>Your Bookings</h3>
+
+<table border="1">
+    <tr>
+        <th>Event Name</th>
+        <th>Time Slot</th>
+    </tr>
+
+    {% for booking in user_bookings %}
+        <tr>
+            <td>{{ booking[0] }}</td>
+            <td>{{ booking[2] }}</td>
+        </tr>
+    {% endfor %}
+
+</table>
+
+<hr>
+
+<h3>Bookable Events</h3>
+
+<h2>Available Events</h2>
+<form method="POST">
+    <table border="1">
+
+        <tr>
+            <th>Event Name</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Available Slots</th>
+            <th>Action</th>
+        </tr>
+
+        {% for event in bookable_events %}
+
+            <tr>
+                <td>{{ event[0] }}</td>
+                <td>{{ event[1] }}</td>
+                <td>{{ event[2] }}</td>
+
+                <td>
+                    <select name="time_slot_{{ event[0] }}" required>
+                        {% for i in range(event[4]) %}
+                            {% set start_time = event[3] | replace(':', '') | int %}
+                            {% set offset = i * event[5] %}
+                            {% set time_slot = start_time + offset %}
+
+                            {% set hour = time_slot // 100 %}
+                            {% set minute = time_slot % 100 %}
+
+                            {% if minute >= 60 %}
+                                {% set hour = hour + minute // 60 %}
+                                {% set minute = minute % 60 %}
+                            {% endif %}
+
+                            {% set display_time = "{:02d}:{:02d}".format(hour, minute) %}
+
+                            {% if display_time not in existing_bookings.get(event[0], []) %}
+                                <option value="{{ display_time }}">{{ display_time }}</option>
+                            {% endif %}
+                        {% endfor %}
+                        </select>
+                </td>
+
+                <td>
+                    <button name="book_button" type="submit" value="{{ event[0] }}">Book</button>
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+    </table>
+</form>
+<p style="color:red;">{{ error_message }}</p>
+
+</html>

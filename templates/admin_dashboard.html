@@ -1,0 +1,132 @@
+<html>
+
+<title>Admin Dashboard - Time Slot Booking App</title>
+
+<h1>Time Slot Booking App</h1>
+
+<h2>Admin Dashboard - <a href="{{ url_for('logout') }}">Logout</a></h2>
+
+<hr>
+
+<h3>User Management</h3>
+<form method="POST">
+    <table border="1">
+        <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td name="username">{{ user[0] }}</td>
+
+                <td>
+                    <select name="user_role_{{ user[0] }}">
+                        <option value="student" {% if user[2]== 'student' %}selected{% endif %}>Student</option>
+                        <option value="admin" {% if user[2]== 'admin' %}selected{% endif %}>Admin</option>
+                    </select>
+
+                </td>
+
+                <td>
+                    <button name="update_role" value="{{ user[0] }}" type="submit">Update Role</button>
+                    <button name="delete_user" value="{{ user[0] }}" type="submit">Delete User</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</form>
+<p style="color:red;">{{ user_error_message }}</p>
+
+<hr>
+
+<h3>Create bookable event</h3>
+
+<form method="POST">
+    <table border="1">
+
+        <tr>
+            <td><label for="name">Name</label></td>
+            <td><input type="text" id="name" name="name" required></td>
+        </tr>
+
+        <tr>
+            <td><label for="description">Description</label></td>
+            <td><input type="text" id="description" name="description"></td>
+        </tr>
+
+        <tr>
+            <td><label for="date">Date</label></td>
+            <td><input type="date" id="date" name="date" required></td>
+        </tr>
+
+        <tr>
+            <td><label for="start_time">Start Time</label></td>
+            <td><input type="time" id="start_time" name="start_time" required></td>
+        </tr>
+
+        <tr>
+            <td><label for="number_slots">Number of slots</label></td>
+            <td><input type="number" id="number_slots" name="number_slots" min="1" required></td>
+        </tr>
+
+        <tr>
+            <td><label for="slot_duration">Slot duration</label></td>
+            <td>
+                <input type="number" id="slot_duration" name="slot_duration" min="5" required>
+                <label for="slot_duration">minutes</label>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <button name="create_booking" type="submit">Create bookable event</button>
+            </td>
+        </tr>
+
+    </table>
+</form>
+<p style="color:red;">{{ event_error_message }}</p>
+
+<hr>
+
+<h3>Pre-existing bookable events</h3>
+<form method="POST">
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>Number of slots</th>
+            <th>Slot duration (minutes)</th>
+            <th>Bookings &lt;username:time slot&gt;</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for event in bookable_events %}
+            <tr>
+                <td>{{ event[0] }}</td>
+                <td>{{ event[1] }}</td>
+                <td>{{ event[2] }}</td>
+                <td>{{ event[3] }}</td>
+                <td>{{ event[4] }}</td>
+                <td>{{ event[5] }}</td>
+                <td>
+                    <ul>
+                        {% if student_bookings.get(event[0]) %}
+                            {% for booking in student_bookings.get(event[0]) %}
+                            <li>{{ booking[1] }} - {{ booking[2] }}</li>
+                            {% endfor %}
+                        {% else %}
+                        <p>No bookings yet.</p>
+                        {% endif %}
+                    </ul>
+                </td>
+                <td><button name="delete_event" value="{{ event[0] }}" type="submit">Delete event</button></td>
+            </tr>
+        {% endfor %}
+    </table>
+</form>
+
+</html>
