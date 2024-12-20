@@ -155,7 +155,6 @@ def logout():
 
 @app.route('/reset')
 def reset():
-    session.clear()
     database.execute('DROP TABLE users')
     database.execute('DROP TABLE bookable_events')
     database.execute('DROP TABLE bookings')
