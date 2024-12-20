@@ -153,6 +153,14 @@ def logout():
     session.clear()
     return redirect((url_for('login')))
 
+@app.route('/reset')
+def reset():
+    session.clear()
+    database.execute('DROP TABLE users')
+    database.execute('DROP TABLE bookable_events')
+    database.execute('DROP TABLE bookings')
+    return 'Reset complete'
+
 if __name__ == '__main__':
     database.create_defaults()
     app.run(debug=True)
